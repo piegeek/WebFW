@@ -1,11 +1,14 @@
 const User = require('../database/models').User;
+const hashPassword = require('../helpers').hashPassword;
 
 async function createUser(req, res) {
     try {
+        const hashedPassword = hashPassword(req.body.password);
+
         const user = await User.create({
             email:    req.body.email || null,
             username: req.body.username,
-            password: req.body.password
+            password: hashedPassword
         });
 
         return res.status(201).send(user); // 201 status code : resource created
@@ -15,23 +18,26 @@ async function createUser(req, res) {
     }
 }
 
-async function findUser(req, res) {
-    try {
-        const user = await User.findOne({
-            where: {
-                username: req.params.username
-            }
-        });
+// async function findUserAndGenerateJWT(req, res) {
+//     try {
+//         const user = await User.findOne({
+//             where: {
+//                 username: req.params.username
+//             }
+//         });
 
-        if (user === null) {
-            return res.status(400).send('User not found');
-        }
-        return res.status(201).send(user); // 201 status code : resource created
-    }
-    catch(err) {
-        return res.status(400).send(err);
-    }
-}
+//         if (user === null) {
+//             return res.status(400).send('User not found');
+//         }
+//         if (user.password != req.body.password) {
+//             return res.status(400).send('Password doesn\'t match');
+//         }
+//         return res.status(201).send(user); // 201 status code : resource created
+//     }
+//     catch(err) {
+//         return res.status(400).send(err);
+//     }
+// }
 
 async function updateUserEmail(req, res) {
     try {
@@ -79,6 +85,6 @@ async function deleteUser(req, res) {
 }
 
 
-const userController = { createUser, findUser, updateUserEmail, updateUserPassword, deleteUser };
+const userController = { createUser, updateUserEmail, updateUserPassword, deleteUser };
 
 module.exports = userController;
