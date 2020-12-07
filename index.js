@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // ROUTE SETUP
-app.use('/routes/users', require('./routes/users'));
+app.use('/routes/api/user', require('./routes/api/user'));
 
 // PORT SETUP
 const PORT = process.env.PORT || 5000;
