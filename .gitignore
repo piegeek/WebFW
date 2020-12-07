@@ -2,6 +2,9 @@
 node_modules
 node_modules/*
 
-# config
-config
-config/*
+# database config
+database/config
+database/config/*
+
+# .env
+.env
