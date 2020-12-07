@@ -1,29 +1,31 @@
-const { Sequelize, sequelize } = require(".");
-const User = require("./user");
-
-const Post = sequelize.define('Post', {
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoincrement: true
-    },
-    title: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    body: {
-        type: Sequelize.TEXT
-    },
-    u_id: {
-        type: Sequelize.INTEGER,
-        foreignKey: true,
-        references: {
-            model: 'users',
-            key: 'id'
-        }
-    }
-});
-
-User.hasMany(Post);
-
-module.exports = User;
+'use strict';
+const {
+	Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+	class Post extends Model {
+		/**
+		 * Helper method for defining associations.
+		 * This method is not a part of Sequelize lifecycle.
+		 * The `models/index` file will call this method automatically.
+		 */
+		static associate(models) {
+			// define association here
+			Post.belongsTo(models.User, {
+				foreignKey: 'userId',
+				onDelete: 'CASCADE'
+			});
+		}
+	};
+	Post.init({
+		title: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		body: DataTypes.TEXT
+	}, {
+		sequelize,
+		modelName: 'Post',
+	});
+	return Post;
+};
