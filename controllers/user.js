@@ -1,5 +1,9 @@
+const { compare } = require('bcrypt');
+
 const User = require('../database/models').User;
 const hashPassword = require('../helpers').hashPassword;
+const generateJWT = require('../helpers').generateJWT;
+const compareHash = require('../helpers').compareHash;
 
 async function createUser(req, res) {
     try {
@@ -18,26 +22,26 @@ async function createUser(req, res) {
     }
 }
 
-// async function findUserAndGenerateJWT(req, res) {
-//     try {
-//         const user = await User.findOne({
-//             where: {
-//                 username: req.params.username
-//             }
-//         });
+async function findUser(req, res) {
+    try {
+        const user = await User.findOne({
+            where: {
+                email: req.params.email
+            }
+        });
 
-//         if (user === null) {
-//             return res.status(400).send('User not found');
-//         }
-//         if (user.password != req.body.password) {
-//             return res.status(400).send('Password doesn\'t match');
-//         }
-//         return res.status(201).send(user); // 201 status code : resource created
-//     }
-//     catch(err) {
-//         return res.status(400).send(err);
-//     }
-// }
+        if (user === null) {
+            return res.status(400).send('User not found');
+        }
+        if (!compareHash(req.params.password, user.password)) {
+            return res.status(400).send('Password doesn\'t match');
+        }
+        return res.status(201).send(user); // 201 status code : resource created
+    }
+    catch(err) {
+        return res.status(400).send(err);
+    }
+}
 
 async function updateUserEmail(req, res) {
     try {
