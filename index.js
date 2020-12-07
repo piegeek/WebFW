@@ -1,11 +1,12 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 
 // CREATE APP
 const app = express();
 
 // MIDDLEWARE SETUP
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // ROUTE SETUP
 app.use('/routes/api/user', require('./routes/api/user'));
