@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
 		}
 	};
 	RefreshToken.init({
-		userId: DataTypes.INTEGER,
 		tokenVal: DataTypes.STRING,
+		userId: DataTypes.INTEGER,
 		createDate: DataTypes.DATE,
 		expireDate: DataTypes.DATE
 	}, {
