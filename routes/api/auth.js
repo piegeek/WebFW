@@ -8,7 +8,6 @@ router.post('/signup/', userController.createUser);
 // Login
 router.post('/login/', userController.findUserAndGenerateJWT);
 
-// Logout
-// router.get('/logout/');
+// Logout --> Implemented in the client
 
 module.exports = router;
