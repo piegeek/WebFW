@@ -37,7 +37,7 @@ async function login(req, res) {
             return res.status(400).send('Password doesn\'t match');
         }
 
-        // Generate JWT with userdata 
+        // Generate access JWT with userdata 
         const userdata = {
             email: user.email,
             username: user.username,
@@ -45,7 +45,7 @@ async function login(req, res) {
         const accessToken  = generateJWT(userdata);
 
         // Create refresh token(random)
-        const refreshToken = randtoken.uid(255); // tokenVal is VARCHAR(255) in database
+        const refreshToken = randtoken.uid(255); 
 
         // Insert refresh token into database
         const expireTime = 28 * 24 * 60 // 28 days in minutes
@@ -61,7 +61,7 @@ async function login(req, res) {
         return res.status(201).send(JSON.stringify({
             accessToken:  accessToken,
             refreshToken: refreshToken
-        })); // 201 status code : resource created
+        })); 
     }
     catch(err) {
         return res.status(400).send(err);
