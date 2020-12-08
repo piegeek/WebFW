@@ -6,7 +6,7 @@ const userController = require('../../controllers').userController;
 router.post('/signup/', userController.createUser);
 
 // Login
-router.post('/login/', );
+router.post('/login/', userController.findUserAndGenerateJWT);
 
 // Logout
 // router.get('/logout/');

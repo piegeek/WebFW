@@ -22,21 +22,30 @@ async function createUser(req, res) {
     }
 }
 
-async function findUser(req, res) {
+async function findUserAndGenerateJWT(req, res) {
     try {
         const user = await User.findOne({
             where: {
-                email: req.params.email
+                email: req.body.email
             }
         });
 
         if (user === null) {
             return res.status(400).send('User not found');
         }
-        if (!compareHash(req.params.password, user.password)) {
+        if (!compareHash(req.body.password, user.password)) {
             return res.status(400).send('Password doesn\'t match');
         }
-        return res.status(201).send(user); // 201 status code : resource created
+
+        // Generate JWT with userdata and send it back as response
+        const userdata = {
+            email: user.email,
+            username: user.username,
+        };
+
+        const token = generateJWT(userdata);
+        
+        return res.status(201).send(token); // 201 status code : resource created
     }
     catch(err) {
         return res.status(400).send(err);
@@ -89,6 +98,6 @@ async function deleteUser(req, res) {
 }
 
 
-const userController = { createUser, updateUserEmail, updateUserPassword, deleteUser };
+const userController = { createUser, findUserAndGenerateJWT, updateUserEmail, updateUserPassword, deleteUser };
 
 module.exports = userController;
