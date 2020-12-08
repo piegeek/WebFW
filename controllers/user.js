@@ -1,5 +1,3 @@
-const { compare } = require('bcrypt');
-
 const User = require('../database/models').User;
 const hashPassword = require('../helpers').hashPassword;
 const generateJWT = require('../helpers').generateJWT;
