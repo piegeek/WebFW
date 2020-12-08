@@ -1,4 +1,6 @@
+const randtoken = require('rand-token');
 const User = require('../database/models').User;
+const RefreshToken = require('../database/models').RefreshToken;
 const hashPassword = require('../helpers').hashPassword;
 const generateJWT = require('../helpers').generateJWT;
 const compareHash = require('../helpers').compareHash;
@@ -35,15 +37,31 @@ async function login(req, res) {
             return res.status(400).send('Password doesn\'t match');
         }
 
-        // Generate JWT with userdata and send it back as response
+        // Generate JWT with userdata 
         const userdata = {
             email: user.email,
             username: user.username,
         };
+        const accessToken  = generateJWT(userdata);
 
-        const token = generateJWT(userdata);
+        // Create refresh token(random)
+        const refreshToken = randtoken.uid(255); // tokenVal is VARCHAR(255) in database
+
+        // Insert refresh token into database
+        const expireTime = 28 * 24 * 60 // 28 days in minutes
+    
+        await RefreshToken.create({
+            tokenVal: refreshToken,
+            userId:   user.id,
+            createDate: new Date().getTime(),
+            expireDate: new Date(new Date().getTime() + expireTime * 60000)
+        });
         
-        return res.status(201).send(token); // 201 status code : resource created
+        // Send both tokens as response
+        return res.status(201).send(JSON.stringify({
+            accessToken:  accessToken,
+            refreshToken: refreshToken
+        })); // 201 status code : resource created
     }
     catch(err) {
         return res.status(400).send(err);

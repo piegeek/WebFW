@@ -46,8 +46,6 @@ async function deleteUser(req, res) {
 }
 
 const userController = { 
-    createUser, 
-    findUserAndGenerateJWT, 
     updateUserEmail, 
     updateUserPassword, 
     deleteUser 

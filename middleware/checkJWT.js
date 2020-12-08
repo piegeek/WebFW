@@ -16,7 +16,7 @@ function checkJWT(req, res, next) {
    
     jwt.verify(jwtToken, process.env.TOKEN_SECRET, (err, username) => {
         if (err) {
-            return res.sendStatus(400);
+            return res.status(400).send(err);
         }
         
         req.username = username;

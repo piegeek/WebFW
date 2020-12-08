@@ -17,6 +17,7 @@
     "jsonwebtoken": "^8.5.1",
     "mariadb": "^2.5.2",
     "nodemon": "^2.0.6",
+    "rand-token": "^1.0.1",
     "sequelize": "^6.3.5"
   },
   "devDependencies": {
