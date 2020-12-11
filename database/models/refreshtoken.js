@@ -11,10 +11,23 @@ module.exports = (sequelize, DataTypes) => {
 		 */
 		static associate(models) {
 			// define association here
+			RefreshToken.belongsTo(models.User, {
+				foreignKey: 'userId',
+				onDelete: 'CASCADE'
+			})
 		}
 	};
 	RefreshToken.init({
 		tokenVal: DataTypes.STRING,
+		userId: {
+			type: Sequelize.INTEGER,
+				references: {
+					model: 'Users',
+					key: 'id',
+					as: 'userId'
+				},
+				onDelete: 'CASCADE'
+		},
 		createDate: DataTypes.DATE,
 		expireDate: DataTypes.DATE
 	}, {
