@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const _ = require('lodash');
 const User = require('../database/models').User;
 const RefreshToken = require('../database/models').RefreshToken;
 const hashPassword = require('../helpers').hashPassword;
@@ -10,7 +10,6 @@ async function signup(req, res) {
     try {
         const hashedPassword = hashPassword(req.body.password);
 
-        // TODO: check for duplicate users
         const user = await User.create({
             email:    req.body.email || null,
             username: req.body.username,
@@ -106,12 +105,7 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
         }
 
         // Extract user data from refresh token and sign it to create a new access token
-        const extractedData = extractJWT(token.tokenVal, process.env.REFRESH_TOKEN_SECRET);
-        const userData = {
-            email: extractedData.email,
-            username: extractedData.username
-        };
-
+        const userData = extractJWT(token.tokenVal, process.env.REFRESH_TOKEN_SECRET);
         const newAccessToken = generateJWT(userData, process.env.ACCESS_TOKEN_SECRET);
 
         return res.status(200).send(JSON.stringify({ accessToken: newAccessToken }));
