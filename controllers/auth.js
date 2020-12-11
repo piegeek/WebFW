@@ -55,7 +55,7 @@ async function login(req, res) {
             return res.status(400).json({ error: `Verify account first. Mail sent to: ${user.email}` });
         }
 
-        // Generate access & refresh JWT with userdata 
+        // Generate access & refresh JWT with userdata - ONLY EXPLICITLY DEFINE FIELDS OF userData HERE!!! 
         const userData = {
             email: user.email,
             username: user.username,

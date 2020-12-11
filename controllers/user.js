@@ -1,6 +1,6 @@
 const User = require('../database/models').User;
 
-async function updateUserEmail(req, res) {
+async function updateEmail(req, res) {
     try {
         await User.update({ email: req.body.email }, {
             where: {
@@ -8,14 +8,14 @@ async function updateUserEmail(req, res) {
             }
         });
 
-        return res.sendStatus(200);
+        return res.status(200).json({ success: `Updated email to ${req.body.email}` });
     }
     catch(err) {
         return res.status(400).json({ error: err });
     }
 }
 
-async function updateUserPassword(req, res) {
+async function updatePassword(req, res) {
     try {
         await User.update({ password: req.body.password}, {
             where: {
@@ -23,7 +23,7 @@ async function updateUserPassword(req, res) {
             }
         });
 
-        return res.sendStatus(200);
+        return res.status(200).json({ success: `Updated password to ${req.body.password}` });
     }
     catch(err) {
         return res.status(400).json({ error: err });
@@ -38,7 +38,7 @@ async function deleteUser(req, res) {
             }
         });
 
-        return res.sendStatus(200);
+        return res.status(200).json({ success: `Deleted user: ${req.body.username}` });
     }
     catch(err) {
         return res.status(400).json({ error: err });
@@ -46,8 +46,8 @@ async function deleteUser(req, res) {
 }
 
 const userController = { 
-    updateUserEmail, 
-    updateUserPassword, 
+    updateEmail, 
+    updatePassword, 
     deleteUser 
 };
 
