@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: 'userId',
 				as: 'Posts'
 			});
+			User.hasMany(models.RefreshToken, {
+				foreignKey: 'userId',
+				as: 'RefreshTokens'
+			})
 		}
 	};
 	User.init({

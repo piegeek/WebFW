@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
 	RefreshToken.init({
 		tokenVal: DataTypes.STRING,
 		userId: {
-			type: Sequelize.INTEGER,
+			type: DataTypes.INTEGER,
 				references: {
 					model: 'Users',
 					key: 'id',
