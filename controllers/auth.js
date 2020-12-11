@@ -17,7 +17,7 @@ async function signup(req, res) {
             password: hashedPassword
         });
 
-        // TODO: Send access & refresh tokens
+        // TODO: Send email for verification
 
         return res.status(201).send(user); // 201 status code : resource created
     }
@@ -50,10 +50,9 @@ async function login(req, res) {
         const expireTime = 28 * 24 * 60 // 28 days in minutes
         
         const accessToken  = generateJWT(userData, process.env.ACCESS_TOKEN_SECRET);
-        const refreshToken = generateJWT(userData, process.env.REFRESH_TOKEN_SECRET, expireTime * 60000);
+        const refreshToken = generateJWT(userData, process.env.REFRESH_TOKEN_SECRET, expireTime * 60);
 
         // Insert refresh token into database
-    
         await RefreshToken.create({
             tokenVal: refreshToken,
             userId:   user.id,
