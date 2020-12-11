@@ -3,7 +3,7 @@ const {
 	Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-	class RefreshToken extends Model {
+	class VerificationCode extends Model {
 		/**
 		 * Helper method for defining associations.
 		 * This method is not a part of Sequelize lifecycle.
@@ -11,14 +11,14 @@ module.exports = (sequelize, DataTypes) => {
 		 */
 		static associate(models) {
 			// define association here
-			RefreshToken.belongsTo(models.User, {
+			VerificationCode.belongsTo(models.User, {
 				foreignKey: 'userId',
 				onDelete: 'CASCADE'
 			});
 		}
 	};
-	RefreshToken.init({
-		tokenVal: DataTypes.STRING,
+	VerificationCode.init({
+		codeVal: DataTypes.STRING,
 		userId: {
 			type: DataTypes.INTEGER,
 				references: {
@@ -27,12 +27,10 @@ module.exports = (sequelize, DataTypes) => {
 					as: 'userId'
 				},
 			onDelete: 'CASCADE'
-		},
-		createDate: DataTypes.DATE,
-		expireDate: DataTypes.DATE
+		} 
 	}, {
 		sequelize,
-		modelName: 'RefreshToken',
+		modelName: 'VerificationCode',
 	});
-	return RefreshToken;
+	return VerificationCode;
 };
