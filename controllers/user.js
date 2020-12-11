@@ -1,4 +1,5 @@
 const User = require('../database/models').User;
+const hashPassword = require('../helpers').hashPassword;
 
 async function updateEmail(req, res) {
     try {
@@ -17,13 +18,15 @@ async function updateEmail(req, res) {
 
 async function updatePassword(req, res) {
     try {
-        await User.update({ password: req.body.password}, {
+        const hashedPassword = hashPassword(req.body.password)
+
+        await User.update({ password: hashedPassword }, {
             where: {
                 username: req.body.username
             }
         });
 
-        return res.status(200).json({ success: `Updated password to ${req.body.password}` });
+        return res.status(200).json({ success: `Updated password` });
     }
     catch(err) {
         return res.status(400).json({ error: err });
