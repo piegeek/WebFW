@@ -1,5 +1,8 @@
+const randtok = require('rand-token');
+const nodeMailer = require('nodemailer');
 const User = require('../database/models').User;
 const RefreshToken = require('../database/models').RefreshToken;
+const VerificationCode = require('../database/models').VerificationCode;
 const hashPassword = require('../helpers').hashPassword;
 const generateJWT = require('../helpers').generateJWT;
 const compareHash = require('../helpers').compareHash;
@@ -10,14 +13,44 @@ async function signup(req, res) {
         const hashedPassword = hashPassword(req.body.password);
 
         const user = await User.create({
-            email:    req.body.email || null,
+            email:    req.body.email,
             username: req.body.username,
             password: hashedPassword
         });
 
         // TODO: Send email for verification
+        // Create random string and store in database with reference to user
+        const verificationCodeVal = randtok.uid(128);
 
-        return res.status(201).json({ success: user }); // 201 status code : resource created
+        await VerificationCode.create({
+            codeVal: verificationCodeVal,
+            userId: user.id
+        });
+
+        // Send email to supplied email address with a link pointing back to a route on the server
+        const transporter = nodeMailer.createTransport({
+            service: 'Naver',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        const message = {
+            from: process.env.EMAIL_FROM,
+            to: user.email,
+            subject: 'Verify Email',
+            html: `<p>${process.env.HOST_IP}/verify-user/${verificationCodeVal}</p>`
+        };
+
+        transporter.sendMail(message, (error, info) => {
+            if (error) {
+                throw error;
+            }
+            console.log(info);
+        });
+
+        return res.status(201).json({ success: 'Successfully signed up'}); // 201 status code : resource created
     }
     catch(err) {
         return res.status(400).json({ error: err });
