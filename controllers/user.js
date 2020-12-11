@@ -11,7 +11,7 @@ async function updateUserEmail(req, res) {
         return res.sendStatus(200);
     }
     catch(err) {
-        return res.status(400).send(err);
+        return res.status(400).json({ error: err });
     }
 }
 
@@ -26,7 +26,7 @@ async function updateUserPassword(req, res) {
         return res.sendStatus(200);
     }
     catch(err) {
-        return res.status(400).send(err);
+        return res.status(400).json({ error: err });
     }
 }
 
@@ -41,7 +41,7 @@ async function deleteUser(req, res) {
         return res.sendStatus(200);
     }
     catch(err) {
-        return res.status(400).send(err);
+        return res.status(400).json({ error: err });
     }
 }
 

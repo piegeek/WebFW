@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const User = require('../database/models').User;
 const RefreshToken = require('../database/models').RefreshToken;
 const hashPassword = require('../helpers').hashPassword;
@@ -18,10 +17,10 @@ async function signup(req, res) {
 
         // TODO: Send email for verification
 
-        return res.status(201).send(user); // 201 status code : resource created
+        return res.status(201).json({ success: user }); // 201 status code : resource created
     }
     catch(err) {
-        return res.status(400).send(err);
+        return res.status(400).json({ error: err });
     }
 }
 
@@ -34,10 +33,10 @@ async function login(req, res) {
         });
 
         if (user === null) {
-            return res.status(400).send('User not found');
+            return res.status(400).json({ error: 'User not found' });
         }
         if (!compareHash(req.body.password, user.password)) {
-            return res.status(400).send('Password doesn\'t match');
+            return res.status(400).json({ error: 'Password doesn\'t match' });
         }
 
         // Generate access & refresh JWT with userdata 
@@ -60,13 +59,15 @@ async function login(req, res) {
         });
         
         // Send both tokens as response
-        return res.status(201).send(JSON.stringify({
-            accessToken:  accessToken,
-            refreshToken: refreshToken
-        })); 
+        return res.status(201).json({
+            success: {
+                accessToken:  accessToken,
+                refreshToken: refreshToken
+            }
+        }); 
     }
     catch(err) {
-        return res.status(400).send(err);
+        return res.status(400).json({ error: err });
     }
 }
 
@@ -76,7 +77,7 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
 
         // Check if refresh token is sent over
         if (!refreshToken) {
-            return res.status(400).send('Refresh token missing');
+            return res.status(400).json({ error: 'Refresh token missing' });
         }
 
         // Query the appropriate refresh token from database
@@ -88,7 +89,7 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
 
         // Check if token doesn't exist
         if (!token) {
-            return res.status(400).send('No matching refresh token in the database.')
+            return res.status(400).json({ error: 'No matching refresh token in the database' });
         }
 
         // Check if token expired
@@ -101,17 +102,21 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
             });
 
             // Send error response
-            return res.status(400).send('Refresh token has expired. Please login again.');
+            return res.status(400).send({ error: 'Refresh token has expired. Please login again.' });
         }
 
         // Extract user data from refresh token and sign it to create a new access token
         const userData = extractJWT(token.tokenVal, process.env.REFRESH_TOKEN_SECRET);
         const newAccessToken = generateJWT(userData, process.env.ACCESS_TOKEN_SECRET);
 
-        return res.status(200).send(JSON.stringify({ accessToken: newAccessToken }));
+        return res.status(200).json({
+            success: {
+                accessToken: newAccessToken 
+            }
+        });
     }
     catch(err) {
-        return res.status(400).send(err);
+        return res.status(400).json({ error: err });
     }
     
 }
