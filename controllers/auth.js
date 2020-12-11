@@ -7,6 +7,7 @@ const hashPassword = require('../helpers').hashPassword;
 const generateJWT = require('../helpers').generateJWT;
 const compareHash = require('../helpers').compareHash;
 const extractJWT = require('../helpers').extractJWT;
+const sendMail = require('../helpers').sendMail;
 
 async function signup(req, res) {
     try {
@@ -18,7 +19,6 @@ async function signup(req, res) {
             password: hashedPassword
         });
 
-        // TODO: Send email for verification
         // Create random string and store in database with reference to user
         const verificationCodeVal = randtok.uid(128);
 
@@ -28,29 +28,9 @@ async function signup(req, res) {
         });
 
         // Send email to supplied email address with a link pointing back to a route on the server
-        const transporter = nodeMailer.createTransport({
-            service: 'Naver',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-
-        const message = {
-            from: process.env.EMAIL_FROM,
-            to: user.email,
-            subject: 'Verify Email',
-            html: `<p>${process.env.HOST_IP}/verify-user/${verificationCodeVal}</p>`
-        };
-
-        transporter.sendMail(message, (error, info) => {
-            if (error) {
-                throw error;
-            }
-            console.log(info);
-        });
-
-        return res.status(201).json({ success: 'Successfully signed up'}); // 201 status code : resource created
+        sendMail(user.email, 'Verify Email', `${process.env.HOST_IP}/verify-user/${verificationCodeVal}`);
+        
+        return res.status(200).json({ success: 'Successfully signed up'}); 
     }
     catch(err) {
         return res.status(400).json({ error: err });
