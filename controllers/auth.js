@@ -51,6 +51,9 @@ async function login(req, res) {
         if (!compareHash(req.body.password, user.password)) {
             return res.status(400).json({ error: 'Password doesn\'t match' });
         }
+        if (!user.verified) {
+            return res.status(400).json({ error: `Verify account first. Mail sent to: ${user.email}` });
+        }
 
         // Generate access & refresh JWT with userdata 
         const userData = {
