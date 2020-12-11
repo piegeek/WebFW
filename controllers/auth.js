@@ -28,7 +28,7 @@ async function signup(req, res) {
         });
 
         // Send email to supplied email address with a link pointing back to a route on the server
-        sendMail(user.email, 'Verify Email', `${process.env.HOST_IP}/verify-user/${verificationCodeVal}`);
+        sendMail(user.email, 'Verify Email',`<a href="${process.env.HOST_IP}/verify-user/${verificationCodeVal}">${process.env.HOST_IP}/verify-user/${verificationCodeVal}</a>`);
         
         return res.status(200).json({ success: 'Successfully signed up'}); 
     }

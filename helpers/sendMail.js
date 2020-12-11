@@ -14,7 +14,7 @@ function sendMail(to, subject, text) {
         from: process.env.EMAIL_FROM,
         to: to,
         subject: subject,
-        text: text
+        html: text
     };
 
     transporter.sendMail(message, (error, info) => {
