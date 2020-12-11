@@ -10,9 +10,12 @@ router.post('/signup/', authController.signup);
 router.post('/login/', authController.login);
 
 // Refresh Token
-router.post('/refresh-token/', authController.refreshToken)
+router.post('/refresh-token/', authController.refreshToken);
+
+// Verify User
+router.get('/verify-user/:verificationCode', authController.verifyUser);
 
 // Logout --> Delete access token on the client & delete refresh token on the database 
-router.delete('/logout/', authController.logout)
+router.delete('/logout/', authController.logout);
 
 module.exports = router;

@@ -17,7 +17,12 @@ module.exports = (sequelize, DataTypes) => {
 			User.hasMany(models.RefreshToken, {
 				foreignKey: 'userId',
 				as: 'RefreshTokens'
-			})
+			});
+			User.hasMany(models.VerificationCode, {
+				foreignKey: 'userId',
+				as: 'VerificationCodes'
+			});
+
 		}
 	};
 	User.init({

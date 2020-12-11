@@ -134,6 +134,37 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
     
 }
 
+async function verifyUser(req, res) {
+    try {
+        const user = await User.findOne({
+            include: [{
+                model: VerificationCode,
+                as: 'VerificationCodes',
+                where: {
+                    codeVal: req.params.verificationCode
+                }
+            }]
+        });
+
+        await User.update({ verified: true }, {
+            where: {
+                id: user.id
+            }
+        });
+
+        await VerificationCode.destroy({
+            where: {
+                codeVal: req.params.verificationCode
+            }
+        });
+
+        res.status(200).json({ success: 'User now verified' });
+    }
+    catch(err) {
+        res.status(400).json({ error: err });
+    }
+}
+
 async function logout(req, res) {
     try {
         // Delete refresh token saved in the database
@@ -156,6 +187,7 @@ const authController = {
     signup,
     login,
     refreshToken,
+    verifyUser,
     logout
  };
 
