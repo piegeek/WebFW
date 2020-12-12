@@ -24,3 +24,7 @@
 4. auth-004: verify user errors
 
 5. auth-005: logout errors
+
+6. auth-006: checkAccessToken middleware errors
+    * auth-006001: access token missing error
+    * auth-006002: access token value error
