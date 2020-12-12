@@ -3,7 +3,7 @@ const router = express.Router();
 const userController = require('../../controllers').userController;
 const checkAccessToken = require('../../middleware').checkAccessToken;
 
-// All below routes must be authorized(Needs to have access key)
+// All routes below must be authorized(Needs to have access key)
 router.use(checkAccessToken);
 
 // Update user email

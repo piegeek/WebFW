@@ -15,7 +15,7 @@ function checkAccessToken(req, res, next) {
     }
    
     jwt.verify(jwtToken, process.env.ACCESS_TOKEN_SECRET, (err, userData) => {
-        if (err) {
+        if (err) { // Problem with error key -> Tell user to login again
             return res.status(400).json({ error: err });
         }
         
