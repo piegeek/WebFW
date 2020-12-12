@@ -1,5 +1,6 @@
 const User = require('../database/models').User;
 const hashPassword = require('../helpers').hashPassword;
+const createError = require('../helpers').createError;
 
 async function updateEmail(req, res) {
     try {
@@ -9,10 +10,10 @@ async function updateEmail(req, res) {
             }
         });
 
-        return res.status(200).json({ success: `Updated email to ${req.body.email}` });
+        return res.status(200).json({ message: `Updated email to ${req.body.email}` });
     }
     catch(err) {
-        return res.status(400).json({ error: err });
+        return res.status(400).json(createError('internal', err));
     }
 }
 
@@ -26,10 +27,10 @@ async function updatePassword(req, res) {
             }
         });
 
-        return res.status(200).json({ success: `Updated password` });
+        return res.status(200).json({ message: `Updated password` });
     }
     catch(err) {
-        return res.status(400).json({ error: err });
+        return res.status(400).json(createError('internal', err));
     }
 }
 
@@ -41,10 +42,10 @@ async function deleteUser(req, res) {
             }
         });
 
-        return res.status(200).json({ success: `Deleted user: ${req.body.username}` });
+        return res.status(200).json({ message: `Deleted user: ${req.body.username}` });
     }
     catch(err) {
-        return res.status(400).json({ error: err });
+        return res.status(400).json(createError('internal', err));
     }
 }
 

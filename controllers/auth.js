@@ -8,6 +8,7 @@ const generateJWT = require('../helpers').generateJWT;
 const compareHash = require('../helpers').compareHash;
 const extractJWT = require('../helpers').extractJWT;
 const sendMail = require('../helpers').sendMail;
+const createError = require('../helpers').createError;
 
 async function signup(req, res) {
     try {
@@ -30,10 +31,10 @@ async function signup(req, res) {
         // Send email to supplied email address with a link pointing back to a route on the server
         sendMail(user.email, 'Verify Email',`<a href="${process.env.HOST_IP}/verify-user/${verificationCodeVal}">${process.env.HOST_IP}/verify-user/${verificationCodeVal}</a>`);
         
-        return res.status(200).json({ success: 'Successfully signed up'}); 
+        return res.status(200).json({ message: 'Successfully signed up'}); 
     }
     catch(err) {
-        return res.status(400).json({ error: err });
+        return res.status(400).json(createError('internal', err));
     }
 }
 
@@ -46,13 +47,13 @@ async function login(req, res) {
         });
 
         if (user === null) {
-            return res.status(400).json({ error: 'User not found' });
+            return res.status(400).json(createError('auth-002001', 'User not found'));
         }
         if (!compareHash(req.body.password, user.password)) {
-            return res.status(400).json({ error: 'Password doesn\'t match' });
+            return res.status(400).json(createError('auth-002002', 'Password doesn\'t match'));
         }
         if (!user.verified) {
-            return res.status(400).json({ error: `Verify account first. Mail sent to: ${user.email}` });
+            return res.status(400).json(createError('auth-002003', `Verify account first. Mail sent to: ${user.email}`));
         }
 
         // Generate access & refresh JWT with userdata - ONLY EXPLICITLY DEFINE FIELDS OF userData HERE!!! 
@@ -76,14 +77,12 @@ async function login(req, res) {
         
         // Send both tokens as response
         return res.status(201).json({
-            success: {
-                accessToken:  accessToken,
-                refreshToken: refreshToken
-            }
+            accessToken:  accessToken,
+            refreshToken: refreshToken
         }); 
     }
     catch(err) {
-        return res.status(400).json({ error: err });
+        return res.status(400).json(createError('internal', err));
     }
 }
 
@@ -93,7 +92,7 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
 
         // Check if refresh token is sent over
         if (!refreshToken) {
-            return res.status(400).json({ error: 'Refresh token missing' });
+            return res.status(400).json(createError('auth-003001', 'Refresh token missing'));
         }
 
         // Query the appropriate refresh token from database
@@ -105,7 +104,7 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
 
         // Check if token doesn't exist
         if (!token) {
-            return res.status(400).json({ error: 'No matching refresh token in the database' });
+            return res.status(400).json(createError('auth-003002', 'No matching refresh token in the database'));
         }
 
         // Check if token expired
@@ -118,7 +117,7 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
             });
 
             // Send error response
-            return res.status(400).send({ error: 'Refresh token has expired. Please login again.' });
+            return res.status(400).send(createError('auth-003003', 'Refresh token has expired. Please login again.'));
         }
 
         // Extract user data from refresh token and sign it to create a new access token
@@ -126,13 +125,11 @@ async function refreshToken(req, res) { // Creates a new access token if refresh
         const newAccessToken = generateJWT(userData, process.env.ACCESS_TOKEN_SECRET);
 
         return res.status(200).json({
-            success: {
-                accessToken: newAccessToken 
-            }
+            accessToken: newAccessToken 
         });
     }
     catch(err) {
-        return res.status(400).json({ error: err });
+        return res.status(400).json(createError('internal', err));
     }
     
 }
@@ -161,10 +158,10 @@ async function verifyUser(req, res) {
             }
         });
 
-        res.status(200).json({ success: 'User now verified' });
+        return res.status(200).json({ message: 'User now verified' });
     }
     catch(err) {
-        res.status(400).json({ error: err });
+        return res.status(400).json(createError('internal', err));
     }
 }
 
@@ -179,10 +176,10 @@ async function logout(req, res) {
             }
         });
 
-        return res.status(200).json({ success: 'User logged out!' });
+        return res.status(200).json({ message: 'User logged out!' });
     }
     catch(err) {
-        return res.status(400).json({ error: err });
+        return res.status(400).json(createError('internal', err));
     }
 }
 
